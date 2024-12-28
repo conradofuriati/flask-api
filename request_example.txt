@@ -1,0 +1,5 @@
+DynamoDB: GET /dynamodb?key=Id&value=123
+
+Elasticsearch: GET /elasticsearch?index=dados&start_date=2024-05-01&end_date=2024-05-05
+
+MySQL: GET /mysql?column=id&value=1

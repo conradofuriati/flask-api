@@ -48,6 +48,12 @@ def search_elasticsearch(index, start_date, end_date):
     results = [hit['_source'] for hit in response['hits']['hits']]
     return results
 
+# Função para criar item no DynamoDB
+def create_item(table, body):
+    dynamodb = boto3.resource('dynamodb')
+    tbl = dynamodb.Table(table)
+    tbl.put_item(Item=body)
+
 def get_item_from_dynamodb(key, value):
     try:
         response = table_dynamodb.get_item(Key={key: value})

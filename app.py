@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from utils import create_item, search_elasticsearch, get_item_from_dynamodb, get_item_from_mysql
+from utils import create_item, search_elasticsearch, get_item_from_dynamodb, get_item_from_mysql, insert_record_mysql
 
 app = Flask(__name__)
 
@@ -22,6 +22,7 @@ def insert_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+#Rota para consulta no DynamoBD
 @app.route('/get_dynamodb', methods=['GET'])
 def get_from_dynamodb():
     key = request.args.get('key')
@@ -38,6 +39,7 @@ def get_from_dynamodb():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+#Rota para consulta no Elasticsearch
 @app.route('/get_elasticsearch', methods=['GET'])
 def get_from_elasticsearch():
     index = request.args.get('index')
@@ -55,6 +57,7 @@ def get_from_elasticsearch():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+#Rota para consulta no MySQL
 @app.route('/get_mysql', methods=['GET'])
 def get_from_mysql():
     column = request.args.get('column')
@@ -70,6 +73,21 @@ def get_from_mysql():
         return jsonify({"error": str(e)}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Rota para inserir dados no MySQL
+@app.route('/insert_mysql', methods=['POST'])
+def insert_data_mysql():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Invalid or missing JSON payload'}), 400
+
+        table = 'your_table_name'  # Substitua pelo nome da tabela no MySQL
+        record_id = insert_record_mysql(MYSQL_CONFIG, table, data)
+
+        return jsonify({'message': 'Item inserted into MySQL successfully', 'id': record_id}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

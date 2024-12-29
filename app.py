@@ -82,7 +82,7 @@ def insert_data_mysql():
         if not data:
             return jsonify({'error': 'Invalid or missing JSON payload'}), 400
 
-        table = 'your_table_name'  # Substitua pelo nome da tabela no MySQL
+        table = 'table_name'
         record_id = insert_record_mysql(MYSQL_CONFIG, table, data)
 
         return jsonify({'message': 'Item inserted into MySQL successfully', 'id': record_id}), 201

@@ -24,6 +24,7 @@ mysql_conn = mysql.connector.connect(
     database=MYSQL_DATABASE
 )
 
+#Function para consulta no ElasticSearch
 def search_elasticsearch(index, start_date, end_date):
     # Verificar formato das datas
     try:
@@ -54,6 +55,7 @@ def create_item(table, body):
     tbl = dynamodb.Table(table)
     tbl.put_item(Item=body)
 
+#Function para consulta no DynamoDB
 def get_item_from_dynamodb(key, value):
     try:
         response = table_dynamodb.get_item(Key={key: value})
@@ -64,6 +66,7 @@ def get_item_from_dynamodb(key, value):
     except Exception as e:
         raise e
 
+#Function para consulta no MySQL
 def get_item_from_mysql(column, value):
     cursor = mysql_conn.cursor(dictionary=True)
     try:
@@ -78,3 +81,30 @@ def get_item_from_mysql(column, value):
     except Exception as e:
         cursor.close()
         raise e
+
+#Function para insert no MySQL
+def insert_record_mysql(config, table, data):
+    try:
+        # Conectar ao banco de dados
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+
+        # Construir a query de inserção
+        columns = ', '.join(data.keys())
+        placeholders = ', '.join(['%s'] * len(data))
+        query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+
+        # Executar a query
+        cursor.execute(query, tuple(data.values()))
+        connection.commit()
+
+        # Retornar o ID do registro inserido
+        return cursor.lastrowid
+    except mysql.connector.Error as err:
+        raise Exception(f"Erro ao inserir no MySQL: {err}")
+    finally:
+        # Fechar conexões
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()

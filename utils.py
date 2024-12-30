@@ -133,3 +133,27 @@ def update_record_mysql(config, table, record_id, update_data):
             cursor.close()
         if connection:
             connection.close()
+
+def delete_record_mysql(config, table, record_id):
+    try:
+        # Conectar ao banco de dados
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+
+        # Construir a query de deleção
+        query = f"DELETE FROM {table} WHERE id = %s"
+
+        # Executar a query
+        cursor.execute(query, (record_id,))
+        connection.commit()
+
+        # Retornar o número de linhas afetadas
+        return cursor.rowcount
+    except mysql.connector.Error as err:
+        raise Exception(f"Erro ao deletar no MySQL: {err}")
+    finally:
+        # Fechar conexões
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()

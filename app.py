@@ -89,5 +89,23 @@ def insert_data_mysql():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Rota para atualizar dados no MySQL
+@app.route('/update-mysql/<int:record_id>', methods=['PUT'])
+def update_data_mysql(record_id):
+    try:
+        # Obter os dados do corpo da requisição
+        update_data = request.get_json()
+        if not update_data:
+            return jsonify({'error': 'Invalid or missing JSON payload'}), 400
+
+        table = 'your_table_name'  # Substitua pelo nome da tabela no MySQL
+        rows_affected = update_record_mysql(MYSQL_CONFIG, table, record_id, update_data)
+
+        if rows_affected == 0:
+            return jsonify({'message': 'No record found with the given ID'}), 404
+        return jsonify({'message': 'Record updated successfully', 'rows_affected': rows_affected}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)

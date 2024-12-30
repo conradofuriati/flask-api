@@ -108,3 +108,28 @@ def insert_record_mysql(config, table, data):
             cursor.close()
         if connection:
             connection.close()
+
+def update_record_mysql(config, table, record_id, update_data):
+    try:
+        # Conectar ao banco de dados
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+
+        # Construir a query de atualização
+        set_clause = ', '.join([f"{col} = %s" for col in update_data.keys()])
+        query = f"UPDATE {table} SET {set_clause} WHERE id = %s"
+
+        # Executar a query
+        cursor.execute(query, tuple(update_data.values()) + (record_id,))
+        connection.commit()
+
+        # Retornar o número de linhas afetadas
+        return cursor.rowcount
+    except mysql.connector.Error as err:
+        raise Exception(f"Erro ao atualizar no MySQL: {err}")
+    finally:
+        # Fechar conexões
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()

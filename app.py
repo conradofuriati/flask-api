@@ -98,12 +98,25 @@ def update_data_mysql(record_id):
         if not update_data:
             return jsonify({'error': 'Invalid or missing JSON payload'}), 400
 
-        table = 'your_table_name'  # Substitua pelo nome da tabela no MySQL
+        table = 'table_name'  # Substitua pelo nome da tabela no MySQL
         rows_affected = update_record_mysql(MYSQL_CONFIG, table, record_id, update_data)
 
         if rows_affected == 0:
             return jsonify({'message': 'No record found with the given ID'}), 404
         return jsonify({'message': 'Record updated successfully', 'rows_affected': rows_affected}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Rota para deletar dados no MySQL
+@app.route('/delete-mysql/<int:record_id>', methods=['DELETE'])
+def delete_data_mysql(record_id):
+    try:
+        table = 'table_name'  # Substitua pelo nome da tabela no MySQL
+        rows_affected = delete_record_mysql(MYSQL_CONFIG, table, record_id)
+
+        if rows_affected == 0:
+            return jsonify({'message': 'No record found with the given ID'}), 404
+        return jsonify({'message': 'Record deleted successfully', 'rows_affected': rows_affected}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
